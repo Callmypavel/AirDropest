@@ -1,14 +1,16 @@
-package com.peace.airdropest;
+package com.peace.airdropest.View;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
+import com.peace.airdropest.Logic.GameLogicService;
+import com.peace.airdropest.Tool.LogTool;
+import com.peace.airdropest.Entity.Mission.Mission;
+import com.peace.airdropest.R;
+import com.peace.airdropest.Resource;
 
 /**
  * Created by ouyan on 2017/8/14.
@@ -29,7 +31,7 @@ public class MainView extends android.os.Handler{
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(GameLogicService.getInstance().getMissionState()==Resource.MissionState.MISSION_PAUSED){
+                if(GameLogicService.getInstance().getMissionState()== Resource.MissionState.MISSION_PAUSED){
                     GameLogicService.getInstance().resumeMission();
                     pauseButton.setText("暂停");
                 }else {

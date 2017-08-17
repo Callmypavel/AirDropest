@@ -1,12 +1,14 @@
-package com.peace.airdropest;
+package com.peace.airdropest.Entity.Equipment;
 
 import android.graphics.Bitmap;
+
+import com.peace.airdropest.Entity.Base.GameObject;
 
 /**
  * Created by ouyan on 2017/8/16.
  */
 
-public class Blast extends GameObject{
+public class Blast extends GameObject {
     private int bornTime;
     private int period;
 

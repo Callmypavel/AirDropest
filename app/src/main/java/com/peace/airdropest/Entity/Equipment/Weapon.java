@@ -1,4 +1,6 @@
-package com.peace.airdropest;
+package com.peace.airdropest.Entity.Equipment;
+
+import com.peace.airdropest.Tool.OneBitmapUtil;
 
 /**
  * Created by ouyan on 2017/8/17.
@@ -28,6 +30,7 @@ public class Weapon extends Equipment implements Cloneable{
         this.name = name;
         this.weaponType = weaponType;
         this.cdTime = cdTime;
+        this.lastCdTime = -cdTime;
         this.setImage(OneBitmapUtil.getBitmapFromText(weaponType+"",100,100));
         magazine = new Magazine(weaponType,capacity,bullet);
     }

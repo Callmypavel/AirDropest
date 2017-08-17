@@ -1,11 +1,8 @@
-package com.peace.airdropest.Activity;
+package com.peace.airdropest;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-
-import com.peace.airdropest.R;
-import com.peace.airdropest.View.NavigationView;
 
 /**
  * Created by ouyan on 2017/8/14.

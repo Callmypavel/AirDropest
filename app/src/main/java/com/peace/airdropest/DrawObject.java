@@ -1,4 +1,4 @@
-package com.peace.airdropest.Entity.Base;
+package com.peace.airdropest;
 
 import android.graphics.Bitmap;
 

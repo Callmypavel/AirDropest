@@ -1,8 +1,4 @@
-package com.peace.airdropest.Entity.Character;
-
-import com.peace.airdropest.Entity.Equipment.Bullet;
-import com.peace.airdropest.Entity.Equipment.Weapon;
-import com.peace.airdropest.Logic.GameLogicService;
+package com.peace.airdropest;
 
 import java.util.ArrayList;
 

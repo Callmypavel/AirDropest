@@ -1,16 +1,10 @@
-package com.peace.airdropest.Entity.Mission;
-
-import com.peace.airdropest.Entity.Character.Enemy;
-import com.peace.airdropest.Entity.Character.Player;
-import com.peace.airdropest.Entity.Equipment.Blast;
-import com.peace.airdropest.Entity.Equipment.Bullet;
-import com.peace.airdropest.Entity.Base.GameObject;
-import com.peace.airdropest.Entity.Equipment.Weapon;
-import com.peace.airdropest.Tool.LogTool;
+package com.peace.airdropest;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by ouyan on 2017/8/14.
@@ -59,7 +53,7 @@ public class Mission {
             Weapon weapon1 = (Weapon) weapon.clone();
             LogTool.log(this,"检查对象复制"+weapon+","+weapon1);
             LogTool.log(this,"检查对象复制"+weapon.getMagazine()+","+weapon1.getMagazine());
-            playerWeapons.add(weapon1);
+            playerWeapons.add(weapon);
         }
 
     }

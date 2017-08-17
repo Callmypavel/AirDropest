@@ -1,4 +1,4 @@
-package com.peace.airdropest.Tool;
+package com.peace.airdropest;
 
 import android.util.Log;
 

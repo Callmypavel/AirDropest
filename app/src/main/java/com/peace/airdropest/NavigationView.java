@@ -1,12 +1,9 @@
-package com.peace.airdropest.View;
+package com.peace.airdropest;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
-
-import com.peace.airdropest.Activity.MainActivity;
-import com.peace.airdropest.R;
 
 /**
  * Created by ouyan on 2017/8/15.

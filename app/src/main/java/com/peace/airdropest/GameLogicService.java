@@ -1,15 +1,8 @@
-package com.peace.airdropest.Logic;
+package com.peace.airdropest;
 
-import com.peace.airdropest.Entity.Equipment.Blast;
-import com.peace.airdropest.Entity.Equipment.Bullet;
-import com.peace.airdropest.Entity.Character.Enemy;
-import com.peace.airdropest.Entity.Base.GameObject;
-import com.peace.airdropest.Entity.Mission.Mission;
-import com.peace.airdropest.Entity.Equipment.Weapon;
-import com.peace.airdropest.Resource;
-import com.peace.airdropest.Tool.LogTool;
-import com.peace.airdropest.View.BaseGameView;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,7 +24,7 @@ public class GameLogicService {
     interface GameLogicHandler {
         void startGame();
     }
-    public interface GameEventListener{
+    interface GameEventListener{
         void OnGameStarted();
         void OnBulletCooling(String weaponName);
         void OnBulletShort(String weaponName);
@@ -70,7 +63,7 @@ public class GameLogicService {
             @Override
             public void run() {
                 LogTool.log(this,"mission state"+mission.getMissionState(),false);
-                if(mission.getMissionState()!= Resource.MissionState.MISSION_PAUSED){
+                if(mission.getMissionState()!=Resource.MissionState.MISSION_PAUSED){
                     currentTime += period;
                     //生成敌人
                     Enemy latestEnemy = mission.getLatestEnemy();

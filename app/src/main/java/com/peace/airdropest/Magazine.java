@@ -1,4 +1,6 @@
-package com.peace.airdropest.Entity.Equipment;
+package com.peace.airdropest;
+
+import java.util.ArrayList;
 
 /**
  * Created by ouyan on 2017/8/17.

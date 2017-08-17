@@ -5,10 +5,10 @@ package com.peace.airdropest;
  */
 
 public class Resource {
-    public static class ActionMode {
+    static class ActionMode {
         public final static int ACTION_ENEMY_DEFAULT = 1;
     }
-    public static class MissionState{
+    static class MissionState{
         public static final int MISSION_STARTED = 0;
         public static final int MISSION_PAUSED= 1;
         public static final int MISSION_CANCELLED= 2;
@@ -18,7 +18,7 @@ public class Resource {
         public static final int WEAPON_SHORT= 6;
         public static final int ENEMY_KILLED= 7;
     }
-    public static class ViewConfig{
+    static class ViewConfig{
         public static final int DEFAULT_HORIZONTAL_NUM = 50;
         public static final int DEFAULT_VERTICAL_NUM = 50;
         public static int UNIT_WIDTH;

@@ -1,4 +1,4 @@
-package com.peace.airdropest.View;
+package com.peace.airdropest;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -11,8 +11,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-
-import com.peace.airdropest.Resource;
 
 import java.util.ArrayList;
 

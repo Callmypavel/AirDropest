@@ -1,15 +1,13 @@
-package com.peace.airdropest.Entity.Equipment;
+package com.peace.airdropest;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-
-import com.peace.airdropest.Entity.Base.GameObject;
 
 /**
  * Created by ouyan on 2017/8/15.
  */
 
-public class Bullet extends GameObject {
+public class Bullet extends GameObject{
     private int type;
 
     private int damage;

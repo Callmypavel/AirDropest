@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AirDropest</string>
+    <string name="start_game">开始作战</string>
+    <string name="equipment_adjust">战备调整</string>
+</resources>

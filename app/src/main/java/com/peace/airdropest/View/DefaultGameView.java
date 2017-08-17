@@ -1,14 +1,16 @@
-package com.peace.airdropest;
+package com.peace.airdropest.View;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.Toast;
 
-import java.util.logging.Handler;
+import com.peace.airdropest.Entity.Equipment.Blast;
+import com.peace.airdropest.Entity.Equipment.Bullet;
+import com.peace.airdropest.Entity.Character.Enemy;
+import com.peace.airdropest.Entity.Equipment.Weapon;
+import com.peace.airdropest.Logic.GameLogicService;
 
 /**
  * Created by ouyan on 2017/8/14.

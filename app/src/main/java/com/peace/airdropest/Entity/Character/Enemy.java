@@ -1,7 +1,10 @@
-package com.peace.airdropest;
+package com.peace.airdropest.Entity.Character;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+
+import com.peace.airdropest.Entity.Base.GameObject;
+import com.peace.airdropest.Resource;
 
 /**
  * Created by ouyan on 2017/8/15.

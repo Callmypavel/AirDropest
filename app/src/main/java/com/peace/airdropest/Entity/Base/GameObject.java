@@ -1,12 +1,12 @@
-package com.peace.airdropest;
+package com.peace.airdropest.Entity.Base;
 
-import android.graphics.Bitmap;
+import com.peace.airdropest.Entity.Base.DrawObject;
 
 /**
  * Created by ouyan on 2017/8/14.
  */
 
-public class GameObject extends DrawObject{
+public class GameObject extends DrawObject {
 
     protected String tag;
     protected Coordinate currentCoordinate;

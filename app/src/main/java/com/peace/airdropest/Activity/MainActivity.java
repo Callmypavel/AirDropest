@@ -1,9 +1,11 @@
-package com.peace.airdropest;
+package com.peace.airdropest.Activity;
 
-import android.content.Intent;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.peace.airdropest.Logic.GameLogicService;
+import com.peace.airdropest.R;
+import com.peace.airdropest.View.MainView;
 
 public class MainActivity extends AppCompatActivity {
 

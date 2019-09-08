@@ -19,7 +19,9 @@ import android.util.Log;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import com.peace.airdropest.R;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.security.PrivilegedAction;
 
 /**
@@ -27,6 +29,21 @@ import java.security.PrivilegedAction;
  */
 
 public class OneBitmapUtil {
+    public static Bitmap getBitmapFromName(Context context,String name){
+        try {
+            Field field = R.drawable.class.getField(name);
+            LogTool.log("OneBitmapUtil",name);
+            int resId = field.getInt(R.drawable.class);
+            LogTool.log("OneBitmapUtil",resId+"");
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),resId);
+            LogTool.log("OneBitmapUtil",bitmap+"");
+            return bitmap;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static Bitmap zoomImg(Bitmap bm, int newWidth,int newHeight){
         // 获得图片的宽高
         int width = bm.getWidth();
@@ -60,6 +77,11 @@ public class OneBitmapUtil {
         Canvas canvas = new Canvas(result);
         canvas.drawBitmap(bitmap,0,0,paint);
         return result;
+    }
+    public static Bitmap getBitmapFromColor(int width,int height,int colorInt){
+        Bitmap bitmap = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(colorInt);
+        return bitmap;
     }
     public static Bitmap drawColorToBitmap(Context context,int resId,int color){
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),resId);

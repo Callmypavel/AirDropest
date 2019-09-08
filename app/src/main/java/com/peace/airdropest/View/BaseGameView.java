@@ -1,26 +1,23 @@
 package com.peace.airdropest.View;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 
 import com.peace.airdropest.Resource;
-
-import java.util.ArrayList;
 
 /**
  * Created by ouyan on 2017/8/14.
  */
 
-public abstract class BaseGameView extends View implements View.OnTouchListener{
+public abstract class BaseGameView extends SurfaceView implements View.OnTouchListener,SurfaceHolder.Callback{
     protected int screenWidth;
     protected int screenHeight;
     protected int unitHeight;
@@ -29,10 +26,15 @@ public abstract class BaseGameView extends View implements View.OnTouchListener{
     private int horizonNum = Resource.ViewConfig.DEFAULT_HORIZONTAL_NUM;
     private int verticalNum = Resource.ViewConfig.DEFAULT_VERTICAL_NUM;
 
+    protected int viewHeight;
+    protected int viewWidth;
     protected Bitmap backgroundBitmap;
     protected Paint defaultPaint = new Paint();
+    protected boolean isDraw;
+    protected SurfaceHolder holder;
 
-    protected Handler handler;
+
+
     public BaseGameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -41,6 +43,8 @@ public abstract class BaseGameView extends View implements View.OnTouchListener{
     private void init(){
         initParams();
         setOnTouchListener(this);
+        holder = getHolder();
+        holder.addCallback(this);
     }
 
     protected abstract void handleAttributes(Context context,AttributeSet attrs);
@@ -55,9 +59,6 @@ public abstract class BaseGameView extends View implements View.OnTouchListener{
         Resource.ViewConfig.UNIT_WIDTH = unitWidth;
         Resource.ViewConfig.UNIT_HEIGHT = unitHeight;
     }
-    public void setHandler(Handler handler){
-        this.handler = handler;
-    }
 
 
     protected abstract void onTouchCoordinate(int indexX, int indexY,float realX,float realY);
@@ -70,5 +71,21 @@ public abstract class BaseGameView extends View implements View.OnTouchListener{
         int indexY = (int)y/unitHeight;
         onTouchCoordinate(indexX,indexY,x,y);
         return false;
+    }
+
+    public int getViewHeight() {
+        return viewHeight;
+    }
+
+    public void setViewHeight(int viewHeight) {
+        this.viewHeight = viewHeight;
+    }
+
+    public int getViewWidth() {
+        return viewWidth;
+    }
+
+    public void setViewWidth(int viewWidth) {
+        this.viewWidth = viewWidth;
     }
 }

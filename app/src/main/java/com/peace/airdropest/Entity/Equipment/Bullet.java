@@ -5,19 +5,19 @@ import android.graphics.Color;
 
 import com.peace.airdropest.Entity.Base.GameObject;
 
+import java.util.ArrayList;
+
 /**
  * Created by ouyan on 2017/8/15.
  */
 
 public class Bullet extends GameObject {
     private int type;
-
     private int damage;
-
     private int baseDamege;
     private float currentHeight;
     private Blast blast;
-
+    private ArrayList<GameObject> watchedGameObjects = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -52,6 +52,10 @@ public class Bullet extends GameObject {
         this.baseDamege = baseDamege;
         this.currentHeight = currentHeight;
         this.blast = blast;
+    }
+
+    public int remainTime(int gravity){
+        return (int)((Math.sqrt(2*currentHeight*gravity+getSpeed()*getSpeed())-getSpeed())/gravity);
     }
 
     @Override

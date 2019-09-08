@@ -6,6 +6,7 @@ import com.peace.airdropest.Entity.Equipment.Blast;
 import com.peace.airdropest.Entity.Equipment.Bullet;
 import com.peace.airdropest.Entity.Base.GameObject;
 import com.peace.airdropest.Entity.Equipment.Weapon;
+import com.peace.airdropest.Resource;
 import com.peace.airdropest.Tool.LogTool;
 
 import java.util.ArrayList;
@@ -24,9 +25,14 @@ public class Mission {
     public float deadlinePercent;
     public ArrayList<Enemy> enemies;
     public ArrayList<Enemy> availEnemies;
+    private ArrayList<Building> buildings;
+
     private ArrayList<Bullet> airBullets;
     private ArrayList<Weapon> playerWeapons;
     private ArrayList<Blast> blasts;
+    private String missionName;
+
+    private DialogManager dialogManager;
 
     private int scores;
     private int hitCount = 0;
@@ -34,15 +40,46 @@ public class Mission {
     private int selectedWeaponIndex;
 
 
+    public void addBuilding(Building building) {
+        if(buildings==null){
+            buildings = new ArrayList<>();
+        }
+        buildings.add(building);
+    }
+    public ArrayList<Building> getBuildings() {
+        return buildings;
+    }
+
+    public void setBuildings(ArrayList<Building> buildings) {
+        this.buildings = buildings;
+    }
+
+    public DialogManager getDialogManager() {
+        return dialogManager;
+    }
+
+    public void setDialogManager(DialogManager dialogManager) {
+        this.dialogManager = dialogManager;
+    }
+
+    public String getMissionName() {
+        return missionName;
+    }
+
+    public void setMissionName(String missionName) {
+        this.missionName = missionName;
+    }
 
     @SuppressWarnings("unchecked")
     public Mission(){
         enemies = new ArrayList<>();
-        for (int i=2;i<50;i++){
+        for (int i=2;i<10;i++){
             Enemy enemy = new Enemy();
-            enemy.setSpeed(1f);
-            enemy.setBornCoordinate(new GameObject.Coordinate(i*enemy.getImage().getWidth(),0));
-            enemy.setGenerateTime((i-1)*2000);
+            enemy.setSpeed(2f);
+            enemy.setBornCoordinate(new GameObject.Coordinate(i*enemy.getImage().getWidth(),100));
+            enemy.setGenerateTime((i-1)*100);
+            enemy.setId("士兵"+i+"号");
+            enemy.setActionMode(Resource.ActionMode.ACTION_ENEMY_ELITE);
             enemies.add(enemy);
         }
         setEnemies(enemies);
@@ -50,6 +87,8 @@ public class Mission {
         gravity = 10;
         deadlinePercent = 0.8f;
         copyWeaponsFromPlayer();
+        setMissionState(Resource.MissionState.MISSION_DIALOGING);
+        buildings = new ArrayList<>();
     }
 
     private void copyWeaponsFromPlayer(){
@@ -57,8 +96,8 @@ public class Mission {
         playerWeapons = new ArrayList<>();
         for(Weapon weapon : player.getWeapons()){
             Weapon weapon1 = (Weapon) weapon.clone();
-            LogTool.log(this,"检查对象复制"+weapon+","+weapon1);
-            LogTool.log(this,"检查对象复制"+weapon.getMagazine()+","+weapon1.getMagazine());
+//            LogTool.log(this,"检查对象复制"+weapon+","+weapon1);
+//            LogTool.log(this,"检查对象复制"+weapon.getMagazine()+","+weapon1.getMagazine());
             playerWeapons.add(weapon1);
         }
 

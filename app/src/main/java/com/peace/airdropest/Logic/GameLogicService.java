@@ -1,15 +1,22 @@
 package com.peace.airdropest.Logic;
 
+import com.peace.airdropest.Entity.Base.Geometry;
+import com.peace.airdropest.Entity.Base.QuadTree;
 import com.peace.airdropest.Entity.Equipment.Blast;
 import com.peace.airdropest.Entity.Equipment.Bullet;
 import com.peace.airdropest.Entity.Character.Enemy;
 import com.peace.airdropest.Entity.Base.GameObject;
 import com.peace.airdropest.Entity.Mission.Mission;
 import com.peace.airdropest.Entity.Equipment.Weapon;
+import com.peace.airdropest.OneApplication;
 import com.peace.airdropest.Resource;
 import com.peace.airdropest.Tool.LogTool;
+import com.peace.airdropest.Tool.OneBitmapUtil;
+import com.peace.airdropest.Tool.StringUtil;
 import com.peace.airdropest.View.BaseGameView;
+import com.peace.airdropest.View.DefaultGameView;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,6 +66,16 @@ public class GameLogicService {
     }
 
     public void startMission(){
+        if(mission.getDialogManager().getNextDialog()==null){
+            startBattle();
+        }else {
+
+        }
+
+    }
+
+    private void startBattle(){
+        mission.setMissionState(Resource.MissionState.MISSION_STARTED);
         if(timer!=null){
             timer.cancel();
         }
@@ -66,84 +83,116 @@ public class GameLogicService {
         if(timerTask!=null){
             timerTask.cancel();
         }
+        final AIController aiController = new AIController(mission);
         timerTask = new TimerTask() {
             @Override
             public void run() {
                 LogTool.log(this,"mission state"+mission.getMissionState(),false);
-                if(mission.getMissionState()!= Resource.MissionState.MISSION_PAUSED){
-                    currentTime += period;
-                    //生成敌人
-                    Enemy latestEnemy = mission.getLatestEnemy();
-                    LogTool.log(this,"latest enemy"+currentTime+","+latestEnemy,false);
-                    if(latestEnemy!=null){
-                        if(currentTime>=latestEnemy.getGenerateTime()){
-                            latestEnemy.setCurrentCoordinate(latestEnemy.getBornCoordinate());
-                            //LogTool.log(this,"添加敌人："+currentTime+","+latestEnemy.getGenerateTime());
-                            mission.addAvailEnemy(latestEnemy);
-                        }
-                    }
+                switch (mission.getMissionState()){
+                    case Resource.MissionState.MISSION_STARTED:
+                        currentTime += period;
+                        //生成敌人
+                        generateObjects();
 
-                    //操作敌人
-                    if(mission.getAvailEnemies()!=null){
-                        //LogTool.log(this,"战场敌人数量:"+mission.getAvailEnemies().size());
+                        //操作敌人
+                        for (Enemy enemy : mission.getAvailEnemies()){
+                            enemy.getVisionObjects().clear();
+                        }
+                        //操作空中的子弹
+                        if(mission.getAirBullets()!=null){
+                            for (int i=0;i<mission.getAirBullets().size();i++) {
+                                Bullet bullet = mission.getAirBullets().get(i);
+                                float newHeight = bullet.getCurrentHeight() - bullet.getSpeed() * period;
+
+                                //LogTool.log(this, "高度测量中" + newHeight);
+                                bullet.setCurrentHeight(newHeight);
+                                bullet.setSpeed(bullet.getSpeed() + mission.getGravity()*period*1.f/1000);
+                                hit(bullet,(int)newHeight);
+//                                if (newHeight <= 0) {
+//                                    //LogTool.log(this, "漆黑子弹" + bullet);
+//
+//                                } else {
+//
+//                                    //LogTool.log(this, "坠落速度" + bullet.getSpeed());
+//                                    // LogTool.log(this, "坠落高度" + newHeight);
+//                                }
+
+                            }
+                        }
+
+                        aiController.operateAIs(period);
+
+                        //操作爆炸冲击波
+                        if(mission.getBlasts()!=null){
+                            for (int i=0;i<mission.getBlasts().size();i++) {
+                                Blast blast = mission.getBlasts().get(i);
+                                if(currentTime>blast.getBornTime()+blast.getPeriod()){
+                                    mission.removeBlast(blast);
+                                }
+
+                            }
+                        }
+
+//                        //计算碰撞
+//                        QuadTree quadTree = new QuadTree<>( mission.getAvailEnemies(),5,5,new Geometry.Rectangle(
+//                                OneApplication.screenWidth/2,//centreX
+//                                OneApplication.screenHeight/2,//centreY
+//                                OneApplication.screenWidth,
+//                                OneApplication.screenHeight
+//                        ));
+//                        quadTree.setProbablyHitListener(new QuadTree.ProbablyHitListener() {
+//                            @Override
+//                            public void onProbablyHit(ArrayList<GameObject> gameObjects) {
+//                                //LogTool.log(this,"可能碰撞的物体数目："+gameObjects.size());
+//                                //LogTool.log(this,"他们的名字是:"+ StringUtil.getNames(gameObjects));
+//                            }
+//                        });
+//                        quadTree.getProbable();
+
+
+                        //判断结束条件
                         for(int i=0;i<mission.getAvailEnemies().size();i++){
                             Enemy enemy = mission.getAvailEnemies().get(i);
                             GameObject.Coordinate coordinate = enemy.getCurrentCoordinate();
-                            switch (enemy.getActionMode()){
-                                case Resource.ActionMode.ACTION_ENEMY_DEFAULT:
-                                    coordinate.indexY += enemy.getSpeed();
-                                    //LogTool.log(this,"change indexY"+coordinate.indexY,false);
-                                    LogTool.log(this,"change enemy"+enemy,false);
-                                    break;
-                            }
-                            if(coordinate.indexY>= Resource.ViewConfig.SCREEN_WIDTH*mission.getDeadlinePercent()){
+                            if(coordinate.indexY>=gameView.getViewHeight()*mission.getDeadlinePercent()){
                                 cancelMission();
                                 gameEventListener.OnGameOvered();
                             }
                         }
+                        break;
+                    case Resource.MissionState.MISSION_DIALOGING:
 
-                    }
-
-                    //操作空中的子弹
-                    if(mission.getAirBullets()!=null){
-                        for (int i=0;i<mission.getAirBullets().size();i++) {
-                            Bullet bullet = mission.getAirBullets().get(i);
-                            float newHeight = bullet.getCurrentHeight() - bullet.getSpeed() * period;
-                            if (newHeight <= 0) {
-                                LogTool.log(this, "漆黑子弹" + bullet);
-                                hit(bullet);
-                            } else {
-                                bullet.setCurrentHeight(newHeight);
-                                bullet.setSpeed(bullet.getSpeed() + mission.getGravity()*period*1.f/1000);
-                                //LogTool.log(this, "坠落速度" + bullet.getSpeed());
-                               // LogTool.log(this, "坠落高度" + newHeight);
-                            }
-
-                        }
-                    }
-
-                    //操作爆炸冲击波
-                    if(mission.getBlasts()!=null){
-                        for (int i=0;i<mission.getBlasts().size();i++) {
-                            Blast blast = mission.getBlasts().get(i);
-                            if(currentTime>blast.getBornTime()+blast.getPeriod()){
-                                mission.removeBlast(blast);
-                            }
-
-                        }
-                    }
-
-                    gameView.postInvalidate();
+                        break;
                 }
+                gameView.postInvalidate();
+
 
             }
         };
-        mission.setMissionState(Resource.MissionState.MISSION_STARTED);
+        //mission.setMissionState(Resource.MissionState.MISSION_STARTED);
         timer.schedule(timerTask,0,period);
-
+        ((DefaultGameView)gameView).initDynamicDrawing();
     }
 
-    private void cleadAllResource(){
+    private void generateObjects(){
+        Enemy latestEnemy = mission.getLatestEnemy();
+        LogTool.log(this,"latest enemy"+currentTime+","+latestEnemy,false);
+        if(latestEnemy!=null){
+            if(currentTime>=latestEnemy.getGenerateTime()){
+                latestEnemy.setCurrentCoordinate(latestEnemy.getBornCoordinate());
+                //LogTool.log(this,"添加敌人："+currentTime+","+latestEnemy.getGenerateTime());
+                mission.addAvailEnemy(latestEnemy);
+            }
+        }
+    }
+    public void initGameObjectParams(GameObject gameObject,int screenWidth,int screenHeight){
+        GameObject.Coordinate percentCoordinate = gameObject.getPercentCoordinate();
+        gameObject.setCurrentCoordinate(new GameObject.Coordinate(screenWidth*percentCoordinate.indexX,screenHeight*percentCoordinate.indexY));
+        gameObject.setHitRadius(screenWidth*gameObject.getWidthPercent());
+        gameObject.setImage(OneBitmapUtil.zoomImg(gameObject.getImage(),(int)(screenWidth*gameObject.getWidthPercent()),(int)(screenHeight*gameObject.getHeightPercent())));
+    }
+
+    private void clearAllResource(){
 
     }
 
@@ -159,6 +208,14 @@ public class GameLogicService {
 
     public Mission getMission(){
         return this.mission;
+    }
+    public void dialogTouch(){
+        if(mission.getDialogManager().getNextDialog()==null){
+            //对话播放完毕
+            startBattle();
+        }else {
+            ((DefaultGameView) gameView).updateGameView();
+        }
     }
 
     public void playerAttack(float indexX,float indexY){
@@ -188,39 +245,67 @@ public class GameLogicService {
         mission.addAirBullet(realBullet);
     }
 
+    public static int probablyHit(Enemy enemy,Bullet bullet,Mission mission){
+        int d1 = (int)Math.pow(enemy.getCurrentCoordinate().indexX-bullet.getCurrentCoordinate().indexX,2);
+        int d2 = (int)Math.pow(enemy.getCurrentCoordinate().indexY-bullet.getCurrentCoordinate().indexY,2);
+        int distance = (int)Math.sqrt(d1+d2);
+        if(distance<=enemy.getHitRadius()+bullet.getHitRadius()){
+            //平面上可能击中
+            int timeToEscape = bullet.remainTime(mission.getGravity());
+            return timeToEscape;
+        }
+        return -1;
+    }
 
-    private void hit(Bullet bullet){
+
+
+    private void hit(Bullet bullet,int newHeight){
         for(int i=0;i<mission.getAvailEnemies().size();i++){
             Enemy enemy = mission.getAvailEnemies().get(i);
-            if(hitDetect(enemy,bullet)) {
-                //击中判定
-                int hp = enemy.getHealthPoint()-bullet.getDamage();
-                if(hp<=0){
-                    mission.setScores(mission.getScores()+enemy.getBaseScore());
-                    mission.setKillCount(mission.getKillCount()+1);
-                    mission.killEnemy(enemy);
-                    mission.setScores(mission.getScores()+enemy.getBaseScore());
-                    gameEventListener.OnEnemyKilled();
-                }else {
-                    enemy.setHealthPoint(hp);
-                }
+            int d1 = (int)Math.pow(enemy.getCurrentCoordinate().indexX-bullet.getCurrentCoordinate().indexX,2);
+            int d2 = (int)Math.pow(enemy.getCurrentCoordinate().indexY-bullet.getCurrentCoordinate().indexY,2);
+            int distance = (int)Math.sqrt(d1+d2);
+            if(enterVision(enemy,bullet,distance)) {
+                enemy.getVisionObjects().add(bullet);
+                if(newHeight<=0) {
+                    if (hitDetect(enemy, bullet, distance)) {
+                        //击中判定
+                        int hp = enemy.getHealthPoint() - bullet.getDamage();
+                        if (hp <= 0) {
+                            mission.setScores(mission.getScores() + enemy.getBaseScore());
+                            mission.setKillCount(mission.getKillCount() + 1);
+                            mission.killEnemy(enemy);
+                            mission.setScores(mission.getScores() + enemy.getBaseScore());
+                            gameEventListener.OnEnemyKilled();
+                        } else {
+                            enemy.setHealthPoint(hp);
+                        }
 
+                    }
+                    bullet.getBlast().setBornTime(currentTime);
+                    mission.addBlast(bullet.getBlast());
+                    mission.removeBullet(bullet);
+
+                }
             }
-            bullet.getBlast().setBornTime(currentTime);
-            mission.addBlast(bullet.getBlast());
-            mission.removeBullet(bullet);
+
 
         }
 
     }
 
-    private boolean hitDetect(GameObject gameObject,Bullet bullet){
+    private boolean enterVision(Enemy enemy,Bullet bullet,int distance){
+        if(distance<=enemy.getHitRadius()+enemy.getVision()+bullet.getHitRadius()){
 
-        double d1 = Math.pow(gameObject.getCurrentCoordinate().indexX-bullet.getCurrentCoordinate().indexX,2);
-        double d2 = Math.pow(gameObject.getCurrentCoordinate().indexY-bullet.getCurrentCoordinate().indexY,2);
-        double distance = Math.sqrt(d1+d2);
+            //LogTool.log(this,"查看判定:"+distance+","+enemy.getHitRadius()+","+bullet.getHitRadius()+",视线"+enemy.getVision());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hitDetect(GameObject gameObject,Bullet bullet,int distance){
         if(distance<=gameObject.getHitRadius()+bullet.getHitRadius()){
-            LogTool.log(this,"查看判定:"+distance+","+gameObject.getHitRadius()+","+bullet.getHitRadius()+"hp"+((Enemy)gameObject).getHealthPoint());
+            //LogTool.log(this,"查看判定:"+distance+","+gameObject.getHitRadius()+","+bullet.getHitRadius()+"hp"+((Enemy)gameObject).getHealthPoint());
             return true;
         }
         return false;
@@ -251,7 +336,7 @@ public class GameLogicService {
         timerTask = null;
         LogTool.log(this,"计时停止");
         mission.setMissionState(Resource.MissionState.MISSION_PAUSED);
-        cleadAllResource();
+        clearAllResource();
     }
 
     public void setGameEventListener(GameEventListener listener,BaseGameView baseGameView){

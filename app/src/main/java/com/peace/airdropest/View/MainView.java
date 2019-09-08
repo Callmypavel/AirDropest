@@ -6,11 +6,13 @@ import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 
+import com.peace.airdropest.Entity.Mission.MissionLoader;
 import com.peace.airdropest.Logic.GameLogicService;
 import com.peace.airdropest.Tool.LogTool;
 import com.peace.airdropest.Entity.Mission.Mission;
 import com.peace.airdropest.R;
 import com.peace.airdropest.Resource;
+import com.peace.airdropest.Tool.MessageTool;
 
 /**
  * Created by ouyan on 2017/8/14.
@@ -18,7 +20,7 @@ import com.peace.airdropest.Resource;
 
 public class MainView extends android.os.Handler{
     private BaseGameView gameView;
-    private Button pauseButton;
+    //private Button pauseButton;
     private Activity activity;
     public MainView(Activity activity){
         this.activity = activity;
@@ -27,27 +29,27 @@ public class MainView extends android.os.Handler{
     private void initViews(final Activity activity){
         LogTool.log(this,"initViews()");
         gameView = activity.findViewById(R.id.main_gameview);
-        pauseButton = activity.findViewById(R.id.main_pause_button);
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(GameLogicService.getInstance().getMissionState()== Resource.MissionState.MISSION_PAUSED){
-                    GameLogicService.getInstance().resumeMission();
-                    pauseButton.setText("暂停");
-                }else {
-                    GameLogicService.getInstance().pauseMission();
-                    pauseButton.setText("继续");
-                }
-            }
-        });
-        startGame(new Mission());
+        //pauseButton = activity.findViewById(R.id.main_pause_button);
+//        pauseButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(GameLogicService.getInstance().getMissionState()== Resource.MissionState.MISSION_PAUSED){
+//                    GameLogicService.getInstance().resumeMission();
+//                    pauseButton.setText("暂停");
+//                }else {
+//                    GameLogicService.getInstance().pauseMission();
+//                    pauseButton.setText("继续");
+//                }
+//            }
+//        });
+        startGame(MissionLoader.loadMission(activity));
     }
 
     private void refreshGame(){
 
     }
 
-    private void startGame(Mission mission){
+    private void startGame(final Mission mission){
         LogTool.log(this,"startGame()");
         GameLogicService.getInstance().setGameEventListener(new GameLogicService.GameEventListener() {
             @Override
@@ -57,23 +59,13 @@ public class MainView extends android.os.Handler{
 
             @Override
             public void OnBulletCooling(String weaponName) {
-                Message message = new Message();
-                message.what = Resource.MissionState.WEAPON_COOLING;
-                Bundle bundle = new Bundle();
-                bundle.putString("weapon_name",weaponName);
-                message.setData(bundle);
-                MainView.this.sendMessage(message);
+                MessageTool.sendMessageWithInfoInBundle(MainView.this,"weapon_name",weaponName,Resource.MissionState.WEAPON_COOLING);
 
             }
 
             @Override
             public void OnBulletShort(String weaponName) {
-                Message message = new Message();
-                message.what = Resource.MissionState.WEAPON_SHORT;
-                Bundle bundle = new Bundle();
-                bundle.putString("weapon_name",weaponName);
-                message.setData(bundle);
-                MainView.this.sendMessage(message);
+                MessageTool.sendMessageWithInfoInBundle(MainView.this,"weapon_name",weaponName,Resource.MissionState.WEAPON_SHORT);
             }
 
             @Override

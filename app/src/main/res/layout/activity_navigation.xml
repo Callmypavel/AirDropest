@@ -3,11 +3,15 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <Button
+        android:layout_centerInParent="true"
+        android:background="@color/colorTransparent"
         android:text="@string/start_game"
         android:id="@+id/navi_start_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <Button
+        android:background="@color/colorTransparent"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/navi_start_button"
         android:text="@string/equipment_adjust"
         android:id="@+id/navi_equipment_button"
